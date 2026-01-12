@@ -26,6 +26,8 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Compiled executable (optional - you may want to include it)
-# dist/tsnake
+# Compiled executables
+dist/tsnake
+tsnake  # C compiled version
+*.o
 

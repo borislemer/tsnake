@@ -1,6 +1,6 @@
 # tsnake 🐍
 
-A classic Snake game implemented in Python for the terminal, featuring a welcome screen, smooth gameplay, and increasing difficulty.
+A classic Snake game implemented in **Python** and **C** for the terminal, featuring a welcome screen, smooth gameplay, and increasing difficulty.
 
 ## Features
 
@@ -14,8 +14,13 @@ A classic Snake game implemented in Python for the terminal, featuring a welcome
 
 ## Requirements
 
+### Python Version
 - Python 3.6 or higher
 - Terminal with curses support (included in most Linux/Unix systems)
+
+### C Version
+- GCC compiler
+- ncurses development library (`libncurses-dev` on Debian/Ubuntu)
 - Terminal size: Minimum 24x24 characters (recommended: 30x40 or larger)
 
 ## Installation
@@ -44,21 +49,36 @@ Or if you made it executable:
 ./tsnake.py
 ```
 
-### Compiled Executable Version
+### C Version (Recommended for Performance)
 
-To build the compiled version, see [BUILD.md](BUILD.md) for instructions.
-
-After building:
+First, install ncurses development library:
 
 ```bash
-./dist/tsnake
+sudo apt install libncurses-dev
+```
+
+Then build and run:
+
+```bash
+make
+./tsnake
 ```
 
 Or install system-wide:
 
 ```bash
-sudo cp dist/tsnake /usr/local/bin/
+sudo make install
 tsnake
+```
+
+### Python Compiled Executable Version
+
+To build the compiled Python version, see [BUILD.md](BUILD.md) for instructions.
+
+After building:
+
+```bash
+./dist/tsnake
 ```
 
 ## Controls
