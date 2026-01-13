@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -O2
-LIBS = -lncurses
+LIBS = -lncursesw
 TARGET = tsnake
 SRC = tsnake.c
 

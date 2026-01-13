@@ -11,6 +11,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <locale.h>
 #include <ncurses.h>
 #include <stdbool.h>
 
@@ -294,13 +295,14 @@ bool move_snake(GameState* game) {
 void draw_border(GameState* game) {
     attron(COLOR_PAIR(COLOR_BORDER));
     
-    // Top and bottom
+    // Use ACS characters for better compatibility
+    // Top and bottom borders
     for (int x = 0; x < game->game_width; x++) {
         mvaddch(1, x + 2, ACS_HLINE);
         mvaddch(game->game_height + 1, x + 2, ACS_HLINE);
     }
     
-    // Left and right
+    // Left and right borders
     for (int y = 0; y < game->game_height; y++) {
         mvaddch(y + 2, 1, ACS_VLINE);
         mvaddch(y + 2, game->game_width + 1, ACS_VLINE);
@@ -337,17 +339,18 @@ void draw_snake(GameState* game) {
         int y = game->snake[i].y + 2;
         int x = game->snake[i].x + 2;
         
+        move(y, x);
         if (swallow_segments[i]) {
             // Thick green for swallowing effect
             attron(A_BOLD);
-            mvprintw(y, x, "██");
+            addstr("██");
             attroff(A_BOLD);
         } else if (i == 0) {
             // Head
-            mvprintw(y, x, "▓▓");
+            addstr("▓▓");
         } else {
             // Body
-            mvprintw(y, x, "░░");
+            addstr("░░");
         }
     }
     
@@ -360,7 +363,8 @@ void draw_food(GameState* game) {
     attron(COLOR_PAIR(color_pair));
     int y = game->food_pos.y + 2;
     int x = game->food_pos.x + 2;
-    mvprintw(y, x, "%s", FRUITS[game->food_index]);
+    move(y, x);
+    addstr(FRUITS[game->food_index]);
     attroff(COLOR_PAIR(color_pair));
 }
 
@@ -377,8 +381,11 @@ void draw_info(GameState* game) {
 
 // Clear game area
 void clear_game_area(GameState* game) {
-    for (int y = 2; y < game->game_height + 3; y++) {
-        for (int x = 2; x < game->game_width + 3; x++) {
+    // Clear only the game area (inside borders)
+    // Game area is from (2, 2) to (game_height+1, game_width+1)
+    // Each position can have 2-character wide elements, so clear 2 spaces per position
+    for (int y = 2; y < game->game_height + 2; y++) {
+        for (int x = 2; x < game->game_width + 2; x++) {
             mvaddch(y, x, ' ');
         }
     }
@@ -550,12 +557,21 @@ int run_game(GameState* game) {
 
 // Main function
 int main() {
+    // Set locale for UTF-8 support
+    setlocale(LC_ALL, "");
+    
     initscr();
-    noecho();
-    curs_set(0);
-    keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE);
+    cbreak();              // Line buffering disabled
+    noecho();              // Don't echo input
+    curs_set(0);           // Hide cursor
+    keypad(stdscr, TRUE);  // Enable special keys
+    nodelay(stdscr, TRUE); // Non-blocking input
     timeout(0);
+    
+    // Enable UTF-8 if available
+    if (has_colors()) {
+        use_default_colors();
+    }
     
     init_colors();
     
